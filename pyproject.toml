@@ -1,0 +1,20 @@
+[project]
+name = "job-hunt-assistant"
+version = "0.1.0"
+description = "An AI agent that helps run a full job search end-to-end, grounded in Laszlo Bock's Apply Within playbook."
+authors = [
+    { name = "Fabrizio GF", email = "fabriziogf@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
