@@ -1,0 +1,20 @@
+# Source playbook — copyrighted material, kept local (see README for credit/link)
+guide.pdf
+guide.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+*.egg-info/
+
+# Env / secrets
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
