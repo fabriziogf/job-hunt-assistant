@@ -15,55 +15,13 @@ from __future__ import annotations
 
 import math
 from datetime import date
-from enum import Enum
 
-from pydantic import BaseModel, Field
-
+from job_hunt_assistant.findings import Finding, FindingsReport, Severity
 from job_hunt_assistant.profile import CandidateProfile
 
 
-class Severity(str, Enum):
-    """How much a finding matters.
-
-    - ERROR: something the playbook says actively gets you rejected.
-    - WARNING: a rule violation worth fixing before sending.
-    - INFO: an observation or opportunity (e.g. brands you could name-drop).
-    """
-
-    ERROR = "error"
-    WARNING = "warning"
-    INFO = "info"
-
-
-class Finding(BaseModel):
-    """A single linter result, traceable back to a playbook chapter."""
-
-    code: str
-    severity: Severity
-    message: str
-    chapter: int
-    where: str | None = None  # human-readable location, e.g. "Amazon — Launched..."
-
-
-class LintReport(BaseModel):
-    """The full set of findings for one profile."""
-
-    findings: list[Finding] = Field(default_factory=list)
-
-    @property
-    def errors(self) -> list[Finding]:
-        return [f for f in self.findings if f.severity is Severity.ERROR]
-
-    @property
-    def warnings(self) -> list[Finding]:
-        return [f for f in self.findings if f.severity is Severity.WARNING]
-
-    @property
-    def has_errors(self) -> bool:
-        return bool(self.errors)
-
-    def by_code(self, code: str) -> list[Finding]:
-        return [f for f in self.findings if f.code == code]
+class LintReport(FindingsReport):
+    """The full set of findings for one profile (a FindingsReport)."""
 
 
 # Chapter 2: a resume should run one page per decade of experience.

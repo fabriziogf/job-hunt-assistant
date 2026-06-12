@@ -1,5 +1,6 @@
 """Job Hunt Assistant — an AI agent grounded in Laszlo Bock's *Apply Within* playbook."""
 
+from job_hunt_assistant.findings import Finding, FindingsReport, Severity
 from job_hunt_assistant.playbook import (
     PLAYBOOK,
     AgentSkill,
@@ -13,6 +14,13 @@ from job_hunt_assistant.profile import (
     Education,
     Experience,
     Skill,
+)
+from job_hunt_assistant.research import (
+    CompanyFact,
+    CompanyResearch,
+    FactCategory,
+    ManualResearchProvider,
+    ResearchProvider,
 )
 from job_hunt_assistant.samples import load_profile, load_sample_profile
 
@@ -29,6 +37,16 @@ __all__ = [
     "Playbook",
     "AgentSkill",
     "ChapterPrinciples",
+    # Shared findings
+    "Finding",
+    "FindingsReport",
+    "Severity",
+    # Company research
+    "CompanyFact",
+    "CompanyResearch",
+    "FactCategory",
+    "ManualResearchProvider",
+    "ResearchProvider",
     # Sample / profile loaders
     "load_profile",
     "load_sample_profile",
