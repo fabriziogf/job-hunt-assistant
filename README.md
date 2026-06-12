@@ -70,11 +70,16 @@ uv run job-hunt prepare \                       # build a full application packa
     --company "Northwind" --role "Senior PM" \
     --description-file jd.txt --out ./out
 uv run job-hunt prepare --job job.json --llm --out ./out   # with LLM steps enabled
+uv run job-hunt prepare --company X --role PM --description "..." --save  # persist + track
+uv run job-hunt pipeline                       # show tracked apps, projection, follow-ups
+uv run job-hunt find --query "AI PM" --rank    # live job search (needs ANTHROPIC_API_KEY)
 ```
 
 `prepare` builds a tailored resume, scores it against the posting (ATS), assembles an
 interview question bank, and — with `--llm` — drafts a cover letter, writing
-`resume.md` / `ats.md` / `cover_letter.txt` to the `--out` directory.
+`resume.md` / `ats.md` / `cover_letter.txt` to the `--out` directory. With `--save` it
+persists the package and tracks the application in a workspace (default `.jobhunt`),
+which `pipeline` reads back.
 
 ## Stack
 

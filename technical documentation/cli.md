@@ -52,7 +52,7 @@ so `uv run job-hunt ...` (or `job-hunt ...` once installed) invokes
 
 ## 3. The commands
 
-Five subcommands, each mapping to one slice of the system:
+Six subcommands, each mapping to one slice of the system:
 
 | Command | Skill(s) exercised | Network? |
 |---|---|---|
@@ -60,6 +60,7 @@ Five subcommands, each mapping to one slice of the system:
 | `lint` | Resume linter (Ch. 2) | offline |
 | `match` | Job discovery — rank *supplied* postings by fit (Phase 5) | offline |
 | `prepare` | The full orchestrator — resume + ATS + questions + cover letter | `--llm` / `--web-research` |
+| `pipeline` | Read the persisted pipeline (tracked apps, projection, due follow-ups) | offline |
 | `find` | Live job search via the web-search provider | always (needs API key) |
 
 ### `practice [--questions N]`
@@ -89,7 +90,15 @@ question count, whether a cover letter was drafted, top keyword gaps — and, if
 is given, writes `resume.md`, `ats.md`, and (when present) `cover_letter.txt` to that
 directory. `--email` switches the cover letter to the outbound-email format;
 `--research FILE.json` supplies company research for paragraph 3, and `--web-research`
-fetches it live instead (see `live-providers.md`).
+fetches it live instead (see `live-providers.md`). `--save [--workspace DIR]` persists
+the package and tracks the application in a `Workspace` (see `persistence.md`).
+
+### `pipeline [--workspace DIR]`
+
+Reads the persisted pipeline back and prints the tracked applications, status counts,
+the Chapter 7 funnel projection, and any follow-ups due today. `--workspace` defaults
+to `.jobhunt`. This is the read side of `prepare --save` — the two together close the
+apply → save → revisit loop.
 
 ### `find --query Q [--location L] [--limit N] [--rank] [--profile PATH]`
 
@@ -135,10 +144,11 @@ writers.
 
 ## 6. Testing
 
-Six CLI tests (part of the 127 total), all offline. They call `main(argv)` directly
+Eight CLI tests (part of the 136 total), all offline. They call `main(argv)` directly
 and capture stdout via pytest's `capsys`. (`find` is network-bound and is not
 exercised here; `prepare --web-research` is tested in its offline configuration —
-without `--llm` the live provider is attached but never queried.):
+without `--llm` the live provider is attached but never queried; `prepare --save` and
+`pipeline` are tested against a temp workspace.):
 
 | Test | Checks |
 |---|---|
