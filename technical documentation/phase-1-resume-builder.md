@@ -30,23 +30,27 @@ The whole phase is organized around keeping these two separate:
                  ┌─────────────────┐                       ┌─────────────┐
    profile ─────▶│   Assembler     │── selects/orders ────▶│   Resume    │
    (+ JD)        │ (deterministic) │   + calls rewriter    │ (structured)│
-                 └────────┬────────┘                       └─────────────┘
-                          │ optional
-                          ▼
-                 ┌─────────────────┐
-                 │  X/Y/Z rewriter │  (LLM — claude-opus-4-8)
-                 └─────────────────┘
+                 └────────┬────────┘                       └──────┬──────┘
+                          │ optional                              │
+                          ▼                              + JD     ▼
+                 ┌─────────────────┐                       ┌─────────────┐
+                 │  X/Y/Z rewriter │  (LLM)                │ ATS Optimizer│
+                 │ claude-opus-4-8 │                       │(deterministic)│
+                 └─────────────────┘                       └──────┬──────┘
+                                                                  ▼
+                                                            ATSReport
+                                                          (score vs. JD)
 ```
 
 **Why split them?** Three concrete payoffs:
 
 1. **Tests need no API key.** The deterministic parts (linter, selection, ordering,
-   trimming, GPA filtering) are ~80% of the value and are fully unit-tested offline.
-   The one component that *must* call a model is isolated behind an interface that
-   tests fake out. All 41 tests run with no network and no key.
+   trimming, GPA filtering, ATS scoring) are most of the value and are fully
+   unit-tested offline. The one component that *must* call a model is isolated behind
+   an interface that tests fake out. All 50 tests run with no network and no key.
 2. **Speed and cost.** Rejecting a resume for a sub-3.5 GPA or a missing email
-   shouldn't cost a model call. The linter runs instantly and free.
-3. **The honesty rule gets two independent enforcement points** (see §5).
+   shouldn't cost a model call. The linter and the ATS scorer run instantly and free.
+3. **The honesty rule gets three independent enforcement points** (see §6).
 
 ---
 
