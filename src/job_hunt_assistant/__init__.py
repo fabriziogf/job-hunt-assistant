@@ -28,6 +28,13 @@ from job_hunt_assistant.orchestration import (
     ApplicationOrchestrator,
     ApplicationPackage,
 )
+from job_hunt_assistant.persistence import (
+    CachedResearchProvider,
+    Workspace,
+    load_model,
+    save_model,
+    slugify,
+)
 from job_hunt_assistant.research import (
     CompanyFact,
     CompanyResearch,
@@ -72,6 +79,12 @@ __all__ = [
     "WebJobSource",
     "ApplicationOrchestrator",
     "ApplicationPackage",
+    # Persistence
+    "Workspace",
+    "CachedResearchProvider",
+    "save_model",
+    "load_model",
+    "slugify",
     # Sample / profile loaders
     "load_profile",
     "load_sample_profile",

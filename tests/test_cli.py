@@ -63,6 +63,36 @@ def test_prepare_requires_a_job():
         main(["prepare"])  # no --job and no --company/--role
 
 
+def test_prepare_save_persists_and_pipeline_reads_it(tmp_path, capsys):
+    ws = tmp_path / "ws"
+    # Prepare + save tracks the application and writes the package.
+    code = main([
+        "prepare",
+        "--company", "Northwind",
+        "--role", "Senior PM",
+        "--description", "recommender systems",
+        "--save", "--workspace", str(ws),
+    ])
+    assert code == 0
+    assert (ws / "pipeline.json").exists()
+    assert list((ws / "packages").glob("*.json"))
+
+    # The pipeline command reads the persisted state back.
+    capsys.readouterr()  # clear
+    code = main(["pipeline", "--workspace", str(ws)])
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Northwind — Senior PM" in out
+    assert "applied=1" in out
+
+
+def test_pipeline_empty_workspace(tmp_path, capsys):
+    code = main(["pipeline", "--workspace", str(tmp_path / "empty")])
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "No tracked applications" in out
+
+
 def test_prepare_web_research_without_llm_stays_offline(capsys):
     # --web-research attaches a live provider, but without --llm there's no cover
     # letter writer to query it, so the run stays fully offline (no network).

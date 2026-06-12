@@ -208,6 +208,44 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         if pkg.cover_letter:
             (out / "cover_letter.txt").write_text(pkg.cover_letter.full_text())
         print(f"\n  Wrote files to {out}/")
+
+    if args.save:
+        from job_hunt_assistant.persistence import Workspace
+
+        ws = Workspace(args.workspace)
+        ws.save_package(pkg)
+        ws.track(orch.to_application(job))
+        print(f"  Saved package and tracked application in {ws.root}/")
+    return 0
+
+
+def cmd_pipeline(args: argparse.Namespace) -> int:
+    from datetime import date
+
+    from job_hunt_assistant.persistence import Workspace
+
+    ws = Workspace(args.workspace)
+    pipe = ws.load_pipeline()
+    if not pipe.applications:
+        print(f"No tracked applications in {ws.root}/. Use `prepare --save` to add one.")
+        return 0
+
+    print(f"Pipeline ({ws.root}) — {len(pipe.applications)} applications\n")
+    for app in pipe.applications:
+        print(f"  [{app.status.value:11}] {app.company} — {app.role} "
+              f"(applied {app.date_applied})")
+
+    counts = pipe.counts_by_status()
+    print("\nBy status:", ", ".join(f"{s.value}={n}" for s, n in counts.items() if n))
+
+    proj = pipe.projection()
+    print(f"Projection: {proj.summary()}")
+
+    due = pipe.due_followups(date.today())
+    if due:
+        print("\nFollow-ups due (every 2 weeks, for 6 weeks):")
+        for app in due:
+            print(f"  - {app.company} — {app.role}")
     return 0
 
 
@@ -271,7 +309,25 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p_prep.add_argument("--email", action="store_true", help="Outbound email format.")
     p_prep.add_argument("--out", help="Directory to write the package files to.")
+    p_prep.add_argument(
+        "--save",
+        action="store_true",
+        help="Persist the package and track the application in the workspace.",
+    )
+    p_prep.add_argument(
+        "--workspace",
+        default=".jobhunt",
+        help="Workspace directory for saved state (default: .jobhunt).",
+    )
     p_prep.set_defaults(func=cmd_prepare)
+
+    p_pipe = sub.add_parser("pipeline", help="Show the tracked application pipeline.")
+    p_pipe.add_argument(
+        "--workspace",
+        default=".jobhunt",
+        help="Workspace directory (default: .jobhunt).",
+    )
+    p_pipe.set_defaults(func=cmd_pipeline)
 
     return parser
 
