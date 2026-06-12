@@ -11,6 +11,9 @@ dependencies = [
     "anthropic>=0.92",
 ]
 
+[project.scripts]
+job-hunt = "job_hunt_assistant.cli:main"
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",
