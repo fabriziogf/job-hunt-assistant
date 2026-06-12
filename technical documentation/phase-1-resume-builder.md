@@ -1,8 +1,9 @@
 # Phase 1 — Resume Builder
 
-**Status:** Core complete · **Scope:** the highest-leverage skill — turn a verified
-profile into a Chapter 2-compliant resume. Three pieces: a deterministic **linter**,
-an LLM **X/Y/Z rewriter**, and an **assembler** that ties them together.
+**Status:** Complete · **Scope:** the highest-leverage skill — turn a verified
+profile into a Chapter 2-compliant resume. Four pieces: a deterministic **linter**,
+an LLM **X/Y/Z rewriter**, an **assembler** that ties them together, and a
+deterministic **ATS Optimizer** that scores the result against a job description.
 
 This document covers what Phase 1 built, the architecture, and the reasoning behind
 the choices. It assumes Phase 0 (the profile store and playbook loader) — see
@@ -154,7 +155,40 @@ always optional and always fakeable.
 
 ---
 
-## 5. How "never fabricate" is enforced — defense in depth
+## 5. The ATS Optimizer (`ats/optimizer.py`)
+
+Chapter 2's "beat the robot": 97% of Fortune 500s screen resumes with software
+first. The playbook's three moves map directly to the implementation, and all of
+it is **deterministic** (no LLM) — so it's instant, free, and fully tested offline.
+
+| Playbook move | Implementation |
+|---|---|
+| Mirror the JD's exact phrases | `extract_keywords()` pulls content unigrams *and* adjacent bigrams from the JD (stopwords break a phrase, so "stakeholder management" is captured as a phrase, not just two words). `score_text()` checks which appear in the resume. |
+| Spell out each acronym once | `extract_acronyms()` finds all-caps 2–5 letter tokens (SQL, LLM, NLP) and flags any the resume hasn't expanded as "Name (ABC)". |
+| Aim for 75%+ match | The score is `matched / total` keywords as a percentage; `target_met` checks it against `TARGET_MATCH = 75.0`. |
+
+The result is an **`ATSReport`** (score, matched, missing, acronyms-to-expand) with
+a Markdown renderer. Two deliberate choices:
+
+- **Missing keywords are ranked by JD frequency**, so the most-emphasized gaps
+  surface first — those are the phrases most worth mirroring.
+- **It reports, it never edits.** The honest fix — add a keyword *only where it
+  truthfully describes your experience* — stays with the candidate, and the
+  Markdown output says so explicitly. This keeps the optimizer on the right side of
+  the "never fabricate" rule: it can't tempt the resume into claiming a skill the
+  candidate doesn't have.
+
+A small robustness detail: the tokenizer keeps internal punctuation (so `node.js`,
+`ci/cd`, `c#`, `c++` survive) but strips surrounding `.`/`-`/`/` (so `kubernetes.`
+at the end of a sentence matches a clean `kubernetes`).
+
+`score_resume()` accepts the assembler's `Resume` object directly (rendering it to
+text first), so the two halves of Phase 1 compose: assemble a resume, then score it
+against the target job.
+
+---
+
+## 6. How "never fabricate" is enforced — defense in depth
 
 The project's hard rule is *never invent candidate data*. Phase 1 enforces it at
 **three** independent layers, so no single bug can produce a fabricated resume:
@@ -173,27 +207,30 @@ visible, actionable feedback rather than a silent omission.
 
 ---
 
-## 6. Testing
+## 7. Testing
 
-41 tests total, all offline. The Phase 1 additions:
+50 tests total, all offline. The Phase 1 additions:
 
 | File | Covers |
 |---|---|
 | `test_resume_linter.py` | Each finding fires on the right input; the sample fixture's known gaps (one missing metric, one sub-3.5 GPA); the page budget; missing-email as an error; chapter citations present. |
 | `test_resume_rewriter.py` | Prompt grounding (X/Y/Z formula, honesty rules, JD inclusion, missing-metric handling); the model is called with the right schema; unverified achievements are refused; batch rewrite skips unverified. |
 | `test_resume_assembler.py` | Verified-only selection; recency ordering; quantified-first; GPA filtering; "Present" for current roles; the length-budget trim; findings attached; Markdown rendering; the injected-rewriter seam. |
+| `test_ats_optimizer.py` | Keyword extraction (bigrams captured, stopwords dropped); acronym detection; perfect/partial match scoring; missing-keyword prioritization; the 75% threshold; unexpanded-acronym flagging; scoring an assembled `Resume`. |
 
 The tests are deliberately **rule-oriented** — they assert the playbook rules behave
-correctly (e.g. "40 bullets trim to 14 on a one-page budget"), so the suite doubles
-as a checklist of which Chapter 2 rules are implemented.
+correctly (e.g. "40 bullets trim to 14 on a one-page budget", "3 of 4 keywords = 75%
+meets target"), so the suite doubles as a checklist of which Chapter 2 rules are
+implemented.
 
 Run them with `uv run pytest -q`.
 
 ---
 
-## 7. What's deferred (and why)
+## 8. What's deferred (and why)
 
-Phase 1's *core* is done; two Chapter 2 items are intentionally left for follow-ups:
+Phase 1's skills (Resume Builder + ATS Optimizer) are done; two Chapter 2 *polish*
+items are intentionally left for follow-ups:
 
 - **PDF rendering** with the hard formatting rules (PDF-only, 11pt, ½" margins, no
   tables/columns, contact info on every page). The structured `Resume` model and its
@@ -204,9 +241,6 @@ Phase 1's *core* is done; two Chapter 2 items are intentionally left for follow-
   spell-checking is noisy on names, brands, and acronyms. This belongs to the LLM
   rewriter's judgement (it reads every bullet anyway) rather than a dictionary check,
   and will be wired in as an explicit pass.
-- **The ATS Optimizer** (also Chapter 2 — keyword-match scoring against a job
-  description) is its own skill in the plan and reuses the rewriter's JD-tailoring
-  groundwork.
 
 ---
 
