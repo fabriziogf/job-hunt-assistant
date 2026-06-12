@@ -55,6 +55,27 @@ inject the LLM writers to upgrade each step to model quality.
 
 See [`CLAUDE.md`](CLAUDE.md) for the full chapter-to-skill mapping and build context.
 
+## CLI
+
+A `job-hunt` command wraps the whole flow. It runs **deterministically by default**
+(no API key needed) and defaults to the bundled synthetic profile, so it works
+out-of-the-box. Pass `--llm` to enable the model-backed steps (resume rewriting,
+cover letter, tailored questions), which require `ANTHROPIC_API_KEY`.
+
+```bash
+uv run job-hunt practice                      # interview practice plan + the 12 questions
+uv run job-hunt lint                           # resume linter on the sample profile
+uv run job-hunt match --jobs jobs.json         # rank postings by fit
+uv run job-hunt prepare \                       # build a full application package
+    --company "Northwind" --role "Senior PM" \
+    --description-file jd.txt --out ./out
+uv run job-hunt prepare --job job.json --llm --out ./out   # with LLM steps enabled
+```
+
+`prepare` builds a tailored resume, scores it against the posting (ATS), assembles an
+interview question bank, and — with `--llm` — drafts a cover letter, writing
+`resume.md` / `ats.md` / `cover_letter.txt` to the `--out` directory.
+
 ## Stack
 
 Python 3.12 via [`uv`](https://github.com/astral-sh/uv), the Anthropic SDK for
