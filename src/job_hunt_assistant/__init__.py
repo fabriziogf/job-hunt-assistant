@@ -15,6 +15,11 @@ from job_hunt_assistant.profile import (
     Experience,
     Skill,
 )
+from job_hunt_assistant.discovery import JobMatch, JobPosting, match_job, rank_jobs
+from job_hunt_assistant.orchestration import (
+    ApplicationOrchestrator,
+    ApplicationPackage,
+)
 from job_hunt_assistant.research import (
     CompanyFact,
     CompanyResearch,
@@ -47,6 +52,13 @@ __all__ = [
     "FactCategory",
     "ManualResearchProvider",
     "ResearchProvider",
+    # Job discovery + orchestration (Phase 5)
+    "JobPosting",
+    "JobMatch",
+    "match_job",
+    "rank_jobs",
+    "ApplicationOrchestrator",
+    "ApplicationPackage",
     # Sample / profile loaders
     "load_profile",
     "load_sample_profile",
