@@ -20,7 +20,219 @@ The core reframe: hiring isn't a search for the most qualified person — it's a
 of repeatable, learnable moves. Repeatable moves are exactly what an agent can
 help execute well.
 
-## Planned skills
+## How to use it — step by step (no coding required)
+
+This guide walks you from zero to a polished application. You'll type a few
+commands into your computer's **Terminal** — an app that lets you run programs by
+typing instead of clicking. Don't worry if you've never used it; just copy and
+paste each command exactly, then press **Enter**. The whole setup takes ~15 minutes,
+and **everything except the optional "smart AI" features works for free and offline.**
+
+### Step 1 — Open the Terminal
+
+- **Mac:** press `Cmd + Space`, type `Terminal`, press Enter.
+- **Windows:** press the Start button, type `PowerShell`, press Enter.
+- **Linux:** open your **Terminal** app.
+
+A window with a blinking cursor appears. That's where you'll paste commands.
+
+### Step 2 — Install `uv` (the tool that runs everything)
+
+Copy-paste the line for your system, press Enter, and wait for it to finish.
+
+```bash
+# Mac or Linux:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell):
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then **close the Terminal window and open a new one** (so it picks up the new tool).
+
+### Step 3 — Download this project
+
+```bash
+git clone https://github.com/fabriziogf/job-hunt-assistant.git
+cd job-hunt-assistant
+```
+
+> No `git`? Instead, click the green **Code** button at the top of the
+> [GitHub page](https://github.com/fabriziogf/job-hunt-assistant) → **Download ZIP**,
+> unzip it, then in the Terminal type `cd ` (with a space) and drag the unzipped
+> folder onto the Terminal window and press Enter.
+
+### Step 4 — Set it up (one time)
+
+```bash
+uv sync
+```
+
+This installs everything the project needs. You only do this once.
+
+### Step 5 — Try it immediately (with the built-in example)
+
+You can use every feature right away with a built-in **example candidate**, before
+adding your own details:
+
+```bash
+uv run job-hunt practice
+```
+
+You'll see an interview-practice plan and the 12 questions you'll almost certainly be
+asked. **If that printed a list, everything is working.** 🎉
+
+### Step 6 — Add your own details (your "profile")
+
+The agent works from a single file describing your experience — your **profile**.
+The easiest way to create one:
+
+1. Open the example file `examples/sample_profile.json` to see the shape.
+2. Open a plain-text editor (**Mac:** TextEdit → *Format → Make Plain Text*;
+   **Windows:** Notepad) and create your own, using this template:
+
+```json
+{
+  "contact": {
+    "full_name": "Your Name",
+    "email": "you@example.com",
+    "phone": "(555) 555-5555",
+    "location": "City, ST",
+    "linkedin": "https://www.linkedin.com/in/you/"
+  },
+  "headline": "What you do in a few words",
+  "summary": "A sentence or two about your experience.",
+  "experiences": [
+    {
+      "company": "Your Employer",
+      "title": "Your Job Title",
+      "location": "City, ST",
+      "start": "2022-01-01",
+      "end": null,
+      "brands": ["A well-known client or tool you used"],
+      "achievements": [
+        {
+          "what": "What you accomplished",
+          "measured_by": "the number that proves it (%, $, time)",
+          "how": "how you did it",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Your School",
+      "degree": "Your Degree",
+      "field_of_study": "Your Major",
+      "graduation": "2021-06-01",
+      "gpa": 3.8
+    }
+  ],
+  "skills": [{ "name": "A skill" }, { "name": "Another skill" }]
+}
+```
+
+3. Create a folder named `profiles` inside the project folder (if it isn't there
+   already), and save your file inside it as `my_profile.json` — so the full path is
+   `profiles/my_profile.json`. (Anything in `profiles/` stays private on your
+   computer and is never uploaded.)
+
+> **Shortcut:** paste the template above into ChatGPT or Claude with *"Fill this out
+> from my resume:"* and your resume text, then save the result. Set `"verified": true`
+> only on achievements that are genuinely true — the agent refuses to make things up.
+
+Now add `--profile profiles/my_profile.json` to any command to use **your** details.
+
+### Step 7 — Check your resume and prepare an application (free, offline)
+
+Point the agent at a job you're interested in. Replace the text in quotes with the
+real role and the job posting:
+
+```bash
+# Check your resume against the playbook's rules:
+uv run job-hunt lint --profile profiles/my_profile.json
+
+# Prepare a tailored application for one job:
+uv run job-hunt prepare \
+    --profile profiles/my_profile.json \
+    --company "Acme Corp" \
+    --role "Product Manager" \
+    --description "Paste the job description here" \
+    --out ./acme
+```
+
+`prepare` tailors your resume to that job, scores how well it matches (the same way
+company software screens resumes — aim for 75%+), lists the keywords you're missing,
+and saves the files into a folder (here, `acme`). Open `acme/resume.md` to read it.
+
+### Step 8 — Track your applications over time
+
+```bash
+# Save this application and add it to your tracker:
+uv run job-hunt prepare --profile profiles/my_profile.json \
+    --company "Acme Corp" --role "Product Manager" \
+    --description "..." --save
+
+# See everything you've applied to, plus which follow-ups are due:
+uv run job-hunt pipeline
+```
+
+Your tracker lives in a folder called `.jobhunt`. Come back any time and run
+`uv run job-hunt pipeline` to see what needs a follow-up (the playbook says: every 2
+weeks, for 6 weeks).
+
+### Step 9 (optional) — Turn on the "smart AI" features
+
+By default the agent uses fixed rules — fast, free, and private. To also have AI
+**rewrite** your resume bullets, **draft a cover letter**, and **search live job
+boards**, you need an Anthropic API key (this is a paid service — you pay per use):
+
+1. Create a key at [console.anthropic.com](https://console.anthropic.com) → *API Keys*.
+2. Tell the Terminal your key (do this each time you open a new Terminal window):
+
+```bash
+# Mac or Linux:
+export ANTHROPIC_API_KEY="paste-your-key-here"
+
+# Windows (PowerShell):
+$env:ANTHROPIC_API_KEY="paste-your-key-here"
+```
+
+3. Add `--llm` to draft a cover letter, or use `find` to search live job listings:
+
+```bash
+uv run job-hunt prepare --profile profiles/my_profile.json \
+    --company "Acme Corp" --role "Product Manager" \
+    --description "..." --llm --out ./acme
+
+uv run job-hunt find --query "product manager" --location "Boston" --rank
+```
+
+### Command cheat sheet
+
+| What you want | Command |
+|---|---|
+| See the interview practice plan | `uv run job-hunt practice` |
+| Check your resume for problems | `uv run job-hunt lint --profile profiles/my_profile.json` |
+| Prepare an application for a job | `uv run job-hunt prepare --profile profiles/my_profile.json --company "X" --role "Y" --description "..." --out ./out` |
+| Save it and track it | add `--save` to the `prepare` command |
+| See your tracked applications | `uv run job-hunt pipeline` |
+| Also draft a cover letter (needs API key) | add `--llm` to the `prepare` command |
+| Search live job listings (needs API key) | `uv run job-hunt find --query "..." --rank` |
+| See all options for any command | add `--help`, e.g. `uv run job-hunt prepare --help` |
+
+### If something goes wrong
+
+- **`command not found: uv`** — close the Terminal and open a new window (Step 2),
+  then try again.
+- **`command not found: job-hunt`** — make sure you ran `uv sync` (Step 4) and that
+  you're inside the `job-hunt-assistant` folder (`cd job-hunt-assistant`).
+- **An error mentioning `ANTHROPIC_API_KEY`** — you used `--llm` or `find` without a
+  key; either set one (Step 9) or drop `--llm` to use the free offline features.
+- **Anything else** — add `--help` to your command to see the available options.
+
+## Skills
 
 Each skill maps to a chapter of the playbook. All skills share one **candidate
 profile store** (the single source of truth for real experience and metrics) and a
@@ -38,7 +250,7 @@ profile store** (the single source of truth for real experience and metrics) and
 
 ## Development status
 
-All five phases and all seven skills are built (116 offline tests passing). Each
+All five phases and all seven skills are built (136 offline tests passing). Each
 phase has a write-up in [`technical documentation/`](technical%20documentation/).
 
 - ✅ **Phase 0 — Foundations:** scaffold, candidate profile schema, shared playbook loader.
