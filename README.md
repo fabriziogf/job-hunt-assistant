@@ -54,6 +54,17 @@ See [`CLAUDE.md`](CLAUDE.md) for the full chapter-to-skill mapping and build con
 Python 3.12 via [`uv`](https://github.com/astral-sh/uv), the Anthropic SDK for
 tool use, and Claude Code as the build environment. Kept deliberately lean.
 
+## Candidate profiles
+
+All skills read from one **candidate profile** — the verified source of truth for
+real experience, metrics, and achievements (see `src/job_hunt_assistant/profile.py`).
+
+- `examples/sample_profile.json` — a **synthetic** fictional candidate, committed
+  for tests and development. Load it with `load_sample_profile()`.
+- `profiles/` — your **real** profile lives here and is **gitignored**, so personal
+  data never lands in this public repo. Load any profile with
+  `load_profile("profiles/my_profile.json")`.
+
 ## Principle
 
 The playbook's most-repeated warning is **don't lie, don't stretch**. The agent

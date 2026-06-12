@@ -1,0 +1,144 @@
+{
+  "contact": {
+    "full_name": "Jordan Rivera",
+    "email": "jordan.rivera@example.com",
+    "phone": "(415) 555-0142",
+    "location": "San Francisco, CA",
+    "linkedin": "https://www.linkedin.com/in/jordan-rivera-example/",
+    "website": null
+  },
+  "headline": "Technical AI/ML Product Manager",
+  "summary": "AI/ML product manager with 8+ years of experience shipping 0-to-1 recommender and GenAI products to tens of millions of users.",
+  "experiences": [
+    {
+      "company": "Northwind Commerce",
+      "title": "Senior Product Manager, Technical",
+      "location": "Seattle, WA",
+      "start": "2022-08-01",
+      "end": null,
+      "achievements": [
+        {
+          "what": "Launched a 0-to-1 ML recommender across the growth funnel",
+          "measured_by": "3% acquisition lift and $40M+ annual incremental revenue",
+          "how": "designing the ranking model and running staged A/B rollouts to 30M+ users",
+          "verified": true,
+          "tags": [
+            "recommender",
+            "0-to-1",
+            "revenue"
+          ]
+        },
+        {
+          "what": "Shipped a fine-tuned LLM personalization layer across surfaces",
+          "measured_by": "5-8% engagement lift for 20M+ members",
+          "how": "fine-tuning on first-party data and adding an eval harness for quality gates",
+          "verified": true,
+          "tags": [
+            "llm",
+            "personalization"
+          ]
+        },
+        {
+          "what": "Established an ML launch-readiness and governance framework",
+          "measured_by": null,
+          "how": "defining quality thresholds and experiment guardrails adopted across the org",
+          "verified": true,
+          "tags": [
+            "governance"
+          ]
+        }
+      ],
+      "brands": [
+        "Salesforce",
+        "Snowflake",
+        "Databricks"
+      ]
+    },
+    {
+      "company": "Atlas Analytics",
+      "title": "Consulting Associate, Financial Markets",
+      "location": "Boston, MA",
+      "start": "2016-08-01",
+      "end": "2020-07-31",
+      "achievements": [
+        {
+          "what": "Led a team building quantitative modeling platforms",
+          "measured_by": "supporting $60M+ in client engagements",
+          "how": "managing 4 analysts and translating model outputs for C-suite audiences",
+          "verified": true,
+          "tags": [
+            "leadership",
+            "modeling"
+          ]
+        },
+        {
+          "what": "Built automated simulation tooling to model market dynamics",
+          "measured_by": "across large multi-million-row transaction datasets",
+          "how": "writing Python pipelines for trading-behavior simulation",
+          "verified": true,
+          "tags": [
+            "python",
+            "simulation"
+          ]
+        }
+      ],
+      "brands": [
+        "DOJ",
+        "SEC"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Washington",
+      "degree": "Master of Business Administration",
+      "field_of_study": "Entrepreneurship and Finance",
+      "graduation": "2022-06-01",
+      "gpa": 3.8,
+      "gpa_scale": 4.0,
+      "awards": [],
+      "self_financed_third_plus": false,
+      "worked_during_school": false,
+      "first_generation": false
+    },
+    {
+      "institution": "State University",
+      "degree": "Bachelor of Science",
+      "field_of_study": "Computer Science",
+      "graduation": "2015-06-01",
+      "gpa": 3.4,
+      "gpa_scale": 4.0,
+      "awards": [],
+      "self_financed_third_plus": false,
+      "worked_during_school": false,
+      "first_generation": true
+    }
+  ],
+  "skills": [
+    {
+      "name": "SEO",
+      "acronym_expansion": "Search Engine Optimization",
+      "category": "marketing"
+    },
+    {
+      "name": "LLM",
+      "acronym_expansion": "Large Language Model",
+      "category": "ai"
+    },
+    {
+      "name": "SQL",
+      "acronym_expansion": null,
+      "category": "data"
+    },
+    {
+      "name": "Python",
+      "acronym_expansion": null,
+      "category": "data"
+    },
+    {
+      "name": "Experimentation & Causal Inference",
+      "acronym_expansion": null,
+      "category": "data"
+    }
+  ]
+}

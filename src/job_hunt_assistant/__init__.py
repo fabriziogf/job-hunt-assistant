@@ -14,6 +14,7 @@ from job_hunt_assistant.profile import (
     Experience,
     Skill,
 )
+from job_hunt_assistant.samples import load_profile, load_sample_profile
 
 __all__ = [
     # Profile store
@@ -28,4 +29,7 @@ __all__ = [
     "Playbook",
     "AgentSkill",
     "ChapterPrinciples",
+    # Sample / profile loaders
+    "load_profile",
+    "load_sample_profile",
 ]

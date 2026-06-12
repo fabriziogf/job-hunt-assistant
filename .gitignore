@@ -14,6 +14,10 @@ venv/
 .env
 .env.*
 
+# Real candidate profiles — personal data, kept local (the synthetic fixture in
+# examples/ is the only profile committed to the repo)
+profiles/
+
 # OS / editor
 .DS_Store
 .idea/
