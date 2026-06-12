@@ -7,6 +7,13 @@ from job_hunt_assistant.resume.linter import (
     lint_profile,
     recommended_max_pages,
 )
+from job_hunt_assistant.resume.assembler import (
+    Resume,
+    ResumeBullet,
+    ResumeEducation,
+    ResumeExperience,
+    build_resume,
+)
 from job_hunt_assistant.resume.rewriter import (
     BulletRewrite,
     ResumeRewriter,
@@ -24,4 +31,10 @@ __all__ = [
     "BulletRewrite",
     "ResumeRewriter",
     "build_rewrite_prompt",
+    # Assembler
+    "Resume",
+    "ResumeBullet",
+    "ResumeEducation",
+    "ResumeExperience",
+    "build_resume",
 ]
