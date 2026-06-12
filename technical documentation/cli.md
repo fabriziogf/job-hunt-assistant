@@ -52,14 +52,15 @@ so `uv run job-hunt ...` (or `job-hunt ...` once installed) invokes
 
 ## 3. The commands
 
-Four subcommands, each mapping to one slice of the system:
+Five subcommands, each mapping to one slice of the system:
 
-| Command | Skill(s) exercised | Needs `--llm`? |
+| Command | Skill(s) exercised | Network? |
 |---|---|---|
-| `practice` | Interview prep — practice math + canonical questions + closing questions (Ch. 5/6) | no |
-| `lint` | Resume linter (Ch. 2) | no |
-| `match` | Job discovery — rank postings by fit (Phase 5) | no |
-| `prepare` | The full orchestrator — resume + ATS + questions + cover letter | optional |
+| `practice` | Interview prep — practice math + canonical questions + closing questions (Ch. 5/6) | offline |
+| `lint` | Resume linter (Ch. 2) | offline |
+| `match` | Job discovery — rank *supplied* postings by fit (Phase 5) | offline |
+| `prepare` | The full orchestrator — resume + ATS + questions + cover letter | `--llm` / `--web-research` |
+| `find` | Live job search via the web-search provider | always (needs API key) |
 
 ### `practice [--questions N]`
 
@@ -79,7 +80,7 @@ Reads a JSON array of `JobPosting` objects, runs `rank_jobs()`, and prints them
 best-fit first with a `★ recommended` flag (≥ 75% ATS match) and the top keyword
 gaps per job.
 
-### `prepare ... [--llm] [--email] [--out DIR]`
+### `prepare ... [--llm] [--web-research] [--email] [--out DIR]`
 
 The capstone command. It builds a `JobPosting` (from `--job FILE.json` or inline
 `--company/--role/--description[-file]`), constructs an `ApplicationOrchestrator`, and
@@ -87,7 +88,15 @@ calls `prepare()`. It prints a summary — mode, ATS score vs. target, resume si
 question count, whether a cover letter was drafted, top keyword gaps — and, if `--out`
 is given, writes `resume.md`, `ats.md`, and (when present) `cover_letter.txt` to that
 directory. `--email` switches the cover letter to the outbound-email format;
-`--research FILE.json` supplies company research for paragraph 3.
+`--research FILE.json` supplies company research for paragraph 3, and `--web-research`
+fetches it live instead (see `live-providers.md`).
+
+### `find --query Q [--location L] [--limit N] [--rank] [--profile PATH]`
+
+Searches for real, current postings via the live `WebJobSource` (needs
+`ANTHROPIC_API_KEY`). With `--rank` (or a `--profile`) it scores the results against
+the candidate, best-fit first. This is the one command that always touches the
+network; on failure it exits with a clear error rather than a traceback.
 
 ---
 
@@ -126,8 +135,10 @@ writers.
 
 ## 6. Testing
 
-Five CLI tests (part of the 121 total), all offline. They call `main(argv)` directly
-and capture stdout via pytest's `capsys`:
+Six CLI tests (part of the 127 total), all offline. They call `main(argv)` directly
+and capture stdout via pytest's `capsys`. (`find` is network-bound and is not
+exercised here; `prepare --web-research` is tested in its offline configuration —
+without `--llm` the live provider is attached but never queried.):
 
 | Test | Checks |
 |---|---|
