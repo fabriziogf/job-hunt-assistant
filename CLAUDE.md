@@ -64,6 +64,11 @@ discovery/matching** (extends beyond the literal guide).
 
 Each phase ships an independently useful skill with its own eval before moving on.
 
+**Documentation convention:** every phase ends with a technical summary in
+`technical documentation/phase-N-<name>.md`, written for a technical reader (define
+terms as they appear). It covers what was implemented, the architecture, and the
+*why* behind the choices. See `phase-0-foundations.md` for the template/standard.
+
 ## Conventions
 
 - Stack follows the personal vibe-coding setup: Python 3.12 via `uv`, Anthropic SDK
