@@ -61,3 +61,18 @@ def test_prepare_inline_job_writes_files(tmp_path, capsys):
 def test_prepare_requires_a_job():
     with pytest.raises(SystemExit):
         main(["prepare"])  # no --job and no --company/--role
+
+
+def test_prepare_web_research_without_llm_stays_offline(capsys):
+    # --web-research attaches a live provider, but without --llm there's no cover
+    # letter writer to query it, so the run stays fully offline (no network).
+    code = main([
+        "prepare",
+        "--company", "Northwind",
+        "--role", "PM",
+        "--description", "recommender systems",
+        "--web-research",
+    ])
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Cover letter: skipped" in out

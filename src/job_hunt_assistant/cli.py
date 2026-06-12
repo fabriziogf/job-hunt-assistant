@@ -142,12 +142,45 @@ def cmd_match(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_find(args: argparse.Namespace) -> int:
+    """Search for real, current postings via web search (needs ANTHROPIC_API_KEY)."""
+    from job_hunt_assistant.discovery import WebJobSource
+
+    try:
+        source = WebJobSource()
+        jobs = source.search(args.query, location=args.location, limit=args.limit)
+    except Exception as exc:  # network / key / API errors
+        raise SystemExit(f"error: live job search failed: {exc}")
+
+    if args.profile is not None or args.rank:
+        profile = _load_profile(args.profile)
+        ranked = rank_jobs(profile, jobs)
+        print(f"Found {len(jobs)} postings for '{args.query}' (best fit first):\n")
+        for m in ranked:
+            flag = "★" if m.recommended else " "
+            print(f"  {flag} {m.score:5.1f}%  {m.job.company} — {m.job.role}")
+            if m.job.url:
+                print(f"             {m.job.url}")
+    else:
+        print(f"Found {len(jobs)} postings for '{args.query}':\n")
+        for j in jobs:
+            loc = f" ({j.location})" if j.location else ""
+            print(f"  - {j.company} — {j.role}{loc}")
+            if j.url:
+                print(f"    {j.url}")
+    return 0
+
+
 def cmd_prepare(args: argparse.Namespace) -> int:
     profile = _load_profile(args.profile)
     job = _job_from_args(args)
     research = _load_research(args.research)
 
     components = _build_llm_components() if args.llm else {}
+    if getattr(args, "web_research", False):
+        from job_hunt_assistant.research import WebResearchProvider
+
+        components["research_provider"] = WebResearchProvider()
     orch = ApplicationOrchestrator(profile, **components)
 
     from job_hunt_assistant.coverletter.models import LetterFormat
@@ -214,11 +247,28 @@ def _build_parser() -> argparse.ArgumentParser:
     p_match.add_argument("--jobs", required=True, help="JSON array of JobPostings.")
     p_match.set_defaults(func=cmd_match)
 
+    p_find = sub.add_parser(
+        "find", help="Search for real postings via web search (needs API key)."
+    )
+    add_profile(p_find)
+    p_find.add_argument("--query", required=True, help="What to search for.")
+    p_find.add_argument("--location", help="Location filter.")
+    p_find.add_argument("--limit", type=int, default=10)
+    p_find.add_argument(
+        "--rank", action="store_true", help="Rank results against the profile."
+    )
+    p_find.set_defaults(func=cmd_find)
+
     p_prep = sub.add_parser("prepare", help="Build a full application package.")
     add_profile(p_prep)
     add_job(p_prep)
     p_prep.add_argument("--research", help="Path to a CompanyResearch JSON file.")
     p_prep.add_argument("--llm", action="store_true", help="Enable model-backed steps.")
+    p_prep.add_argument(
+        "--web-research",
+        action="store_true",
+        help="Fetch company research live via web search (use with --llm).",
+    )
     p_prep.add_argument("--email", action="store_true", help="Outbound email format.")
     p_prep.add_argument("--out", help="Directory to write the package files to.")
     p_prep.set_defaults(func=cmd_prepare)

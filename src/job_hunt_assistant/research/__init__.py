@@ -7,6 +7,7 @@ from job_hunt_assistant.research.company import (
     ManualResearchProvider,
     ResearchProvider,
 )
+from job_hunt_assistant.research.web import WebResearchProvider
 
 __all__ = [
     "CompanyFact",
@@ -14,4 +15,5 @@ __all__ = [
     "FactCategory",
     "ManualResearchProvider",
     "ResearchProvider",
+    "WebResearchProvider",
 ]
