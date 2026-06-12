@@ -7,11 +7,21 @@ from job_hunt_assistant.resume.linter import (
     lint_profile,
     recommended_max_pages,
 )
+from job_hunt_assistant.resume.rewriter import (
+    BulletRewrite,
+    ResumeRewriter,
+    build_rewrite_prompt,
+)
 
 __all__ = [
+    # Linter
     "Finding",
     "LintReport",
     "Severity",
     "lint_profile",
     "recommended_max_pages",
+    # Rewriter
+    "BulletRewrite",
+    "ResumeRewriter",
+    "build_rewrite_prompt",
 ]
