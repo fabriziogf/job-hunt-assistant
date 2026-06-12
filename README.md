@@ -36,16 +36,22 @@ profile store** (the single source of truth for real experience and metrics) and
 | **Pipeline Tracker** | 7 | Runs the volume game and follow-up cadence; B-tier-first sequencing. |
 | **Negotiation Advisor** | 8 | Market-rate research; ask vs. walk-away numbers; deflection scripts; multi-lever asks. |
 
-## Development plan
+## Development status
 
-- **Phase 0 — Foundations:** scaffold, candidate profile schema, shared playbook loader.
-- **Phase 1 — Resume Builder + ATS Optimizer** (highest leverage; ships first).
-- **Phase 2 — Cover Letter / Email + Company Research.**
-- **Phase 3 — Interview Prep Coach.**
-- **Phase 4 — Networking, Pipeline Tracker, Negotiation Advisor.**
-- **Phase 5 — Job discovery/matching + orchestration.**
+All five phases and all seven skills are built (116 offline tests passing). Each
+phase has a write-up in [`technical documentation/`](technical%20documentation/).
 
-Each phase ships an independently useful skill with its own eval before the next.
+- ✅ **Phase 0 — Foundations:** scaffold, candidate profile schema, shared playbook loader.
+- ✅ **Phase 1 — Resume Builder + ATS Optimizer** (highest leverage; shipped first).
+- ✅ **Phase 2 — Cover Letter / Email + Company Research.**
+- ✅ **Phase 3 — Interview Prep Coach.**
+- ✅ **Phase 4 — Networking, Pipeline Tracker, Negotiation Advisor.**
+- ✅ **Phase 5 — Job discovery/matching + orchestration.**
+
+The whole flow runs through a single entry point — `ApplicationOrchestrator.prepare(job)`
+turns one posting into a tailored resume, an ATS score, an interview question bank,
+and (with an LLM writer injected) a cover letter. It runs **fully offline by default**;
+inject the LLM writers to upgrade each step to model quality.
 
 See [`CLAUDE.md`](CLAUDE.md) for the full chapter-to-skill mapping and build context.
 
